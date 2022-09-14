@@ -17,6 +17,7 @@ limitations under the License.
 package v1beta1
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -310,6 +311,41 @@ type NodeRegistrationOptions struct {
 	// IgnorePreflightErrors provides a slice of pre-flight errors to be ignored when the current node is registered.
 	// +optional
 	IgnorePreflightErrors []string `json:"ignorePreflightErrors,omitempty"`
+}
+
+// MarshalJSON marshals NodeRegistrationOptions.Taints in a way that an empty slice is preserved.
+func (n *NodeRegistrationOptions) MarshalJSON() ([]byte, error) {
+	// Marshal an empty Taints slice array with omitempty so it's preserved.
+	if n.Taints != nil && len(n.Taints) == 0 {
+		return json.Marshal(struct {
+			Name                  string            `json:"name,omitempty"`
+			CRISocket             string            `json:"criSocket,omitempty"`
+			Taints                []corev1.Taint    `json:"taints"`
+			KubeletExtraArgs      map[string]string `json:"kubeletExtraArgs,omitempty"`
+			IgnorePreflightErrors []string          `json:"ignorePreflightErrors,omitempty"`
+		}{
+			Name:                  n.Name,
+			CRISocket:             n.CRISocket,
+			Taints:                n.Taints,
+			KubeletExtraArgs:      n.KubeletExtraArgs,
+			IgnorePreflightErrors: n.IgnorePreflightErrors,
+		})
+	}
+
+	// If Taints is nil or not empty we can use omitempty.
+	return json.Marshal(struct {
+		Name                  string            `json:"name,omitempty"`
+		CRISocket             string            `json:"criSocket,omitempty"`
+		Taints                []corev1.Taint    `json:"taints,omitempty"`
+		KubeletExtraArgs      map[string]string `json:"kubeletExtraArgs,omitempty"`
+		IgnorePreflightErrors []string          `json:"ignorePreflightErrors,omitempty"`
+	}{
+		Name:                  n.Name,
+		CRISocket:             n.CRISocket,
+		Taints:                n.Taints,
+		KubeletExtraArgs:      n.KubeletExtraArgs,
+		IgnorePreflightErrors: n.IgnorePreflightErrors,
+	})
 }
 
 // Networking contains elements describing cluster's networking configuration.
