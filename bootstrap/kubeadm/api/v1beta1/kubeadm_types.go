@@ -207,6 +207,12 @@ type RegistryMirrorConfiguration struct {
 
 	// CACert defines the CA cert for the registry mirror
 	CACert string `json:"caCert,omitempty"`
+
+	// Username defines the username for the registry mirror
+	Username string `json:"username,omitempty"`
+
+	// Password defines the password for the registry mirror
+	Password string `json:"password,omitempty"`
 }
 
 // ControlPlaneComponent holds settings common to control plane component of the cluster.

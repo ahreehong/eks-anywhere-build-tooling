@@ -53,6 +53,11 @@ data = "{{.RegistryMirrorCACert}}"
 trusted=true
 {{- end -}}
 `
+	registryMirrorCredentialsTemplate = `{{define "registryMirrorCredentialsSettings" -}}
+[settings.container-registry.credentials]
+username = "{{.RegistryMirrorUsername}}"
+password = "{{.RegistryMirrorPassword}}"
+`
 	nodeLabelsTemplate = `{{ define "nodeLabelSettings" -}}
 [settings.kubernetes.node-labels]
 {{.NodeLabels}}
@@ -74,6 +79,10 @@ trusted=true
 
 {{- if (ne .RegistryMirrorEndpoint "")}}
 {{template "registryMirrorSettings" .}}
+{{- end -}}
+
+{{- if or (ne .RegistryMirrorUsername "") (ne .RegistryMirrorPassword "")}}
+{{template "registryMirrorCredentialsSettings" .}}
 {{- end -}}
 
 {{- if (ne .RegistryMirrorCACert "")}}
